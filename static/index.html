@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kernelcoin Charity - Cybersecurity Education Fund</title>
+    <link href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2ad6ff;
+            --primary-dark: #1a9fbf;
+            --secondary: #7fffd4;
+            --accent: #00ffff;
+            --bg-dark: #0a0a0a;
+            --bg-card: rgba(20, 20, 20, 0.9);
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #2ad6ff33;
+            --success: #00d966;
+            --warning: #ffb700;
+            --error: #ff4444;
+            --glow: 0 0 20px #2ad6ff55;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: radial-gradient(circle at top, #0a0a0a 40%, #000 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%);
+            border-bottom: 2px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--glow);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+            min-width: 0;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .logo span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        nav button:hover,
+        nav button.active {
+            color: var(--primary);
+            background: var(--border-color);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(42, 214, 255, 0.1) 0%, rgba(127, 255, 212, 0.05) 100%);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: var(--glow);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(42, 214, 255, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Balance Display */
+        .balance-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--glow);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .balance-item {
+            text-align: center;
+        }
+
+        .balance-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .balance-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--secondary);
+            text-shadow: 0 0 10px rgba(127, 255, 212, 0.5);
+        }
+
+        .balance-value i {
+            margin-right: 0.5rem;
+        }
+
+        .charity-address {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            margin-top: 0.5rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .tab-button:hover {
+            color: var(--primary);
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Request Coin Section */
+        .request-section {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--glow);
+        }
+
+        .request-section h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .request-button {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px var(--primary);
+            min-height: 48px;
+            min-width: 48px;
+        }
+
+        .request-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px var(--primary);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+        }
+
+        .request-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Response Display */
+        .response-container {
+            display: none;
+            background: rgba(42, 214, 255, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        .response-container.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .response-field {
+            margin-bottom: 1.5rem;
+        }
+
+        .response-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .response-value {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            color: var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .copy-button {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            min-height: 40px;
+            min-width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .copy-button:hover {
+            background: var(--accent);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background: rgba(0, 217, 102, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .alert-warning {
+            background: rgba(255, 183, 0, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .alert i {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        /* DataTable Styling */
+        #distributionsTable,
+        #leaderboardTable {
+            color: var(--text-primary);
+            width: 100%;
+        }
+
+        #distributionsTable thead,
+        #leaderboardTable thead {
+            background: rgba(42, 214, 255, 0.1);
+        }
+
+        #distributionsTable th,
+        #leaderboardTable th {
+            color: var(--primary);
+            font-weight: bold;
+            border-color: var(--border-color);
+            padding: 1rem;
+            font-size: 0.95rem;
+        }
+
+        #distributionsTable td,
+        #leaderboardTable td {
+            padding: 0.75rem 1rem;
+            border-color: var(--border-color);
+        }
+
+        #distributionsTable tbody tr,
+        #leaderboardTable tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s ease;
+        }
+
+        #distributionsTable tbody tr:hover,
+        #leaderboardTable tbody tr:hover {
+            background: rgba(42, 214, 255, 0.05);
+        }
+
+        .dataTables_wrapper {
+            color: var(--text-primary);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .dataTables_info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .paginate_button {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 0.75rem;
+            margin: 0 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 40px;
+            min-width: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .paginate_button:hover,
+        .paginate_button.current {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        .paginate_button.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Leaderboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--glow);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 30px var(--primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--secondary);
+            text-shadow: 0 0 10px rgba(127, 255, 212, 0.5);
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            nav {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: linear-gradient(135deg, rgba(20, 20, 20, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
+                flex-direction: column;
+                gap: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                border-bottom: 2px solid var(--border-color);
+            }
+
+            nav.active {
+                max-height: 500px;
+            }
+
+            nav button {
+                padding: 1rem;
+                border-radius: 0;
+                border-bottom: 1px solid var(--border-color);
+                text-align: left;
+                font-size: 1rem;
+            }
+
+            .header-container {
+                flex-wrap: wrap;
+            }
+
+            .hero {
+                padding: 2rem 1rem;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .balance-card {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 1.5rem;
+            }
+
+            .balance-value {
+                font-size: 1.5rem;
+            }
+
+            .tabs {
+                gap: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+
+            .tab-button {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .request-section {
+                padding: 1.5rem;
+            }
+
+            .request-section h2 {
+                font-size: 1.3rem;
+            }
+
+            .response-value {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .copy-button {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            #distributionsTable th,
+            #leaderboardTable th {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            #distributionsTable td,
+            #leaderboardTable td {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .container {
+                padding: 1rem 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .logo i {
+                font-size: 1.5rem;
+            }
+
+            .logo span {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .hero p {
+                font-size: 0.9rem;
+            }
+
+            .balance-label {
+                font-size: 0.8rem;
+            }
+
+            .balance-value {
+                font-size: 1.3rem;
+            }
+
+            .charity-address {
+                font-size: 0.75rem;
+            }
+
+            .request-section {
+                padding: 1rem;
+            }
+
+            .request-section h2 {
+                font-size: 1.1rem;
+            }
+
+            .request-button {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .response-label {
+                font-size: 0.75rem;
+            }
+
+            .response-value {
+                font-size: 0.8rem;
+                padding: 0.75rem;
+            }
+
+            .copy-button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .stat-label {
+                font-size: 0.75rem;
+            }
+
+            .stat-value {
+                font-size: 1.3rem;
+            }
+
+            .alert {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .alert i {
+                font-size: 1rem;
+            }
+
+            .container {
+                padding: 1rem 0.5rem;
+            }
+
+            .tabs {
+                gap: 0.25rem;
+            }
+
+            .tab-button {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">
+                <i class="fas fa-coins"></i>
+                <span>Kernelcoin Charity</span>
+            </a>
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav id="navMenu">
+                <button class="nav-button active" data-tab="request">
+                    <i class="fas fa-gift"></i> Request Coin
+                </button>
+                <button class="nav-button" data-tab="usage">
+                    <i class="fas fa-book"></i> Usage
+                </button>
+                <button class="nav-button" data-tab="distributions">
+                    <i class="fas fa-table"></i> Distributions
+                </button>
+                <button class="nav-button" data-tab="leaderboard">
+                    <i class="fas fa-trophy"></i> Leaderboard
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1><i class="fas fa-heart"></i> Kernelcoin Charity Fund</h1>
+            <p>Supporting cybersecurity education and community development through Kernelcon</p>
+        </div>
+
+        <!-- Balance Display -->
+        <div class="balance-card">
+            <div class="balance-item">
+                <div class="balance-label">Charity Wallet Balance (Total)</div>
+                <div class="balance-value">
+                    <i class="fas fa-coins"></i><span id="balanceAmount">Loading...</span> KCN
+                </div>
+                <div class="charity-address">
+                    <small>Confirmed: <span id="balanceConfirmed" style="color: var(--success);">Loading...</span> KCN</small><br>
+                    <small>Unconfirmed: <span id="balanceUnconfirmed" style="color: var(--warning);">Loading...</span> KCN</small><br>
+                    <small>Address: <span id="charityAddress">Loading...</span></small>
+                </div>
+            </div>
+            <div class="balance-item">
+                <div class="balance-label">Total Received (Donations + Mining)</div>
+                <div class="balance-value">
+                    <i class="fas fa-arrow-down"></i><span id="totalReceived">Loading...</span> KCN
+                </div>
+                <div class="charity-address">
+                    <small>Distributed: <span id="totalDistributed" style="color: var(--secondary);">Loading...</span> KCN</small><br>
+                    <small>Fees Paid: <span id="totalFees" style="color: var(--warning);">Loading...</span> KCN</small><br>
+                    <small><span id="totalRequests">Loading...</span> distributions made</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" data-tab="request">
+                <i class="fas fa-gift"></i> Request a Coin
+            </button>
+            <button class="tab-button" data-tab="usage">
+                <i class="fas fa-book"></i> Usage Guide
+            </button>
+            <button class="tab-button" data-tab="distributions">
+                <i class="fas fa-table"></i> Distributions
+            </button>
+            <button class="tab-button" data-tab="leaderboard">
+                <i class="fas fa-trophy"></i> Leaderboard
+            </button>
+        </div>
+
+        <!-- Request Coin Tab -->
+        <div id="request-tab" class="tab-content active">
+            <div class="request-section">
+                <h2 style="text-align: center;"><i class="fas fa-paper-plane"></i> Request Kernelcoin</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; text-align: center;">
+                    Join the Kernelcoin community! <br>Click below to generate a new wallet and receive your very first kernelcon. 
+                    <br>Your wallet details will be generated securely and displayed below.
+                </p>
+                
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onCaptchaSuccess"></div>
+                    <button class="request-button" id="requestCoinBtn" onclick="requestCoin()" disabled>
+                        Request A Kernelcoin
+                    </button>
+                </div>
+
+                <div id="responseContainer" class="response-container">
+                    <div id="alertContainer"></div>
+
+                    <div class="response-field" id="mnemonicField" style="display: none;">
+                        <div class="response-label">
+                            <i class="fas fa-shield-alt"></i> BIP39 Mnemonic (12 words) - KEEP SAFE!
+                        </div>
+                        <div class="response-value">
+                            <span id="mnemonicValue" style="flex: 1;"></span>
+                            <button class="copy-button" onclick="copyToClipboard('mnemonicValue')">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="response-field" id="wifField" style="display: none;">
+                        <div class="response-label">
+                            <i class="fas fa-key"></i> Private Key (WIF Format)
+                        </div>
+                        <div class="response-value">
+                            <span id="wifValue" style="flex: 1;"></span>
+                            <button class="copy-button" onclick="copyToClipboard('wifValue')">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="response-field" id="addressField" style="display: none;">
+                        <div class="response-label">
+                            <i class="fas fa-map-marker-alt"></i> Your Kernelcoin Address
+                        </div>
+                        <div class="response-value">
+                            <span id="addressValue" style="flex: 1;"></span>
+                            <button class="copy-button" onclick="copyToClipboard('addressValue')">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="response-field" id="txField" style="display: none;">
+                        <div class="response-label">
+                            <i class="fas fa-link"></i> Transaction Hash
+                        </div>
+                        <div class="response-value">
+                            <span id="txValue" style="flex: 1;"></span>
+                            <button class="copy-button" onclick="copyToClipboard('txValue')">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255, 183, 0, 0.1); border: 1px solid var(--warning); border-radius: 6px; padding: 1rem; margin-top: 1rem; color: var(--warning);">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Important:</strong> Save your mnemonic and private key in a secure location. 
+                        Anyone with access to these can control your funds!
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, rgba(42, 214, 255, 0.15) 0%, rgba(127, 255, 212, 0.1) 100%); border: 2px solid var(--primary); border-radius: 8px; padding: 1.5rem; margin-top: 1rem; color: var(--text-primary); text-align: center;">
+                        <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1rem;">
+                            There are many coins like this, but this one is <strong style="color: var(--primary);">yours</strong>. 
+                            No one can take it from you unless you let them. <br>When you have excess, if you so choose, 
+                            you can pay it forward and contribute back to charity.<br>
+                        </p>
+                        <a href="https://www.youtube.com/watch?v=hJ6yqy-o3Kw" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           style="display: inline-block; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: #000; padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 0 15px var(--primary);">
+                            To the Moon 🚀
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Tab -->
+        <div id="usage-tab" class="tab-content">
+            <div class="request-section">
+                <h2><i class="fas fa-book"></i> How to Use Your Kernelcoin</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    Once you've received your Kernelcoin, here's how to manage and use it.
+                </p>
+            </div>
+        </div>
+
+        <!-- Distributions Tab -->
+        <div id="distributions-tab" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Coins Distributed</div>
+                    <div class="stat-value"><span id="stat-dist-total">0</span> KCN</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Requests</div>
+                    <div class="stat-value"><span id="stat-dist-requests">0</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Transaction Fees Paid</div>
+                    <div class="stat-value"><span id="stat-dist-fees">0</span> KCN</div>
+                </div>
+            </div>
+
+            <div class="request-section">
+                <h2><i class="fas fa-hand-holding-usd"></i> Distribution History</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    View all Kernelcoins distributed by the charity to community members.
+                </p>
+                <table id="distributionsTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Recipient Address</th>
+                            <th>Amount (KCN)</th>
+                            <th>Transaction Hash</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Leaderboard Tab -->
+        <div id="leaderboard-tab" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Donations Received</div>
+                    <div class="stat-value"><span id="stat-lb-total">0</span> KCN</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Unique Donors</div>
+                    <div class="stat-value"><span id="stat-lb-donors">0</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Top Donor Contribution</div>
+                    <div class="stat-value"><span id="stat-lb-top">0</span> KCN</div>
+                </div>
+            </div>
+
+            <div class="request-section">
+                <h2><i class="fas fa-trophy"></i> Donor Leaderboard</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Recognizing generous donors who have contributed to the Kernelcoin Charity Fund.
+                </p>
+                <table id="leaderboardTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Donor Address</th>
+                            <th>Total Donated (KCN)</th>
+                            <th>Transactions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.min.js"></script>
+    <script>
+        let distributionsTable = null;
+        let leaderboardTable = null;
+
+        // Mobile menu toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when nav button is clicked
+        document.querySelectorAll('.nav-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('navMenu').classList.remove('active');
+            });
+        });
+
+        // Tab switching
+        document.querySelectorAll('[data-tab]').forEach(button => {
+            button.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                
+                // Update active states
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Hide all tabs
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                
+                // Show selected tab
+                document.getElementById(tabName + '-tab').classList.add('active');
+
+                // Load data when switching tabs
+                if (tabName === 'distributions') {
+                    loadDistributions();
+                } else if (tabName === 'leaderboard') {
+                    loadLeaderboard();
+                }
+            });
+        });
+
+        // Load initial data
+        async function loadBalance() {
+            try {
+                const response = await fetch('/api/balance');
+                const data = await response.json();
+                document.getElementById('balanceAmount').textContent = data.balance.toFixed(8);
+                document.getElementById('balanceConfirmed').textContent = data.balance_confirmed.toFixed(8);
+                document.getElementById('balanceUnconfirmed').textContent = data.balance_unconfirmed.toFixed(8);
+                document.getElementById('charityAddress').textContent = data.address;
+            } catch (error) {
+                console.error('Error loading balance:', error);
+                document.getElementById('balanceAmount').textContent = 'Error';
+                document.getElementById('balanceConfirmed').textContent = 'Error';
+                document.getElementById('balanceUnconfirmed').textContent = 'Error';
+            }
+        }
+
+        async function loadDistributions() {
+            try {
+                const response = await fetch('/api/distributions');
+                const data = await response.json();
+                
+                // Also load leaderboard to get total received
+                const leaderboardResponse = await fetch('/api/leaderboard');
+                const leaderboardData = await leaderboardResponse.json();
+                
+                // Calculate transaction fees
+                const totalReceived = leaderboardData.total_donations;
+                const balanceResponse = await fetch('/api/balance');
+                const balanceData = await balanceResponse.json();
+                const currentBalance = balanceData.balance;
+                const totalFees = Math.max(0, totalReceived - data.total_given - currentBalance);
+                
+                // Update header stats
+                document.getElementById('totalReceived').textContent = totalReceived.toFixed(8);
+                document.getElementById('totalDistributed').textContent = data.total_given.toFixed(2);
+                document.getElementById('totalFees').textContent = totalFees.toFixed(8);
+                document.getElementById('totalRequests').textContent = data.total_requests;
+                
+                // Update distributions tab stats
+                document.getElementById('stat-dist-total').textContent = data.total_given.toFixed(2);
+                document.getElementById('stat-dist-requests').textContent = data.total_requests;
+                document.getElementById('stat-dist-fees').textContent = totalFees.toFixed(8);
+
+                // Destroy and reinitialize datatable
+                if (distributionsTable) {
+                    distributionsTable.destroy();
+                }
+
+                // Populate table
+                const tableBody = document.getElementById('distributionsTable').querySelector('tbody');
+                tableBody.innerHTML = '';
+                
+                data.distributions.forEach(dist => {
+                    const row = tableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${new Date(dist.timestamp).toLocaleString()}</td>
+                        <td><code style="color: var(--primary);">${dist.recipient_address}</code></td>
+                        <td>${dist.amount.toFixed(2)}</td>
+                        <td><code style="color: var(--secondary);">${dist.tx_hash || 'Pending'}</code></td>
+                    `;
+                });
+
+                // Initialize datatable
+                distributionsTable = new DataTable('#distributionsTable', {
+                    order: [[0, 'desc']],
+                    pageLength: 10,
+                    responsive: true,
+                    language: {
+                        emptyTable: "No distributions yet",
+                        zeroRecords: "No matching distributions found"
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading distributions:', error);
+            }
+        }
+
+        async function loadLeaderboard() {
+            try {
+                const response = await fetch('/api/leaderboard');
+                const data = await response.json();
+                
+                // Update leaderboard tab stats
+                document.getElementById('stat-lb-total').textContent = data.total_donations.toFixed(2);
+                document.getElementById('stat-lb-donors').textContent = data.unique_donors;
+                document.getElementById('stat-lb-top').textContent = 
+                    data.donors.length > 0 ? data.donors[0].total_donated.toFixed(2) : '0';
+
+                // Destroy and reinitialize datatable
+                if (leaderboardTable) {
+                    leaderboardTable.destroy();
+                }
+
+                // Populate table
+                const tableBody = document.getElementById('leaderboardTable').querySelector('tbody');
+                tableBody.innerHTML = '';
+                
+                data.donors.forEach((donor, index) => {
+                    const row = tableBody.insertRow();
+                    const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : (index + 1);
+                    row.innerHTML = `
+                        <td style="text-align: center; font-size: 1.2rem;">${rankIcon}</td>
+                        <td><code style="color: var(--primary);">${donor.address}</code></td>
+                        <td style="color: var(--secondary); font-weight: bold;">${donor.total_donated.toFixed(8)}</td>
+                        <td>${donor.tx_count}</td>
+                    `;
+                });
+
+                // Initialize datatable
+                leaderboardTable = new DataTable('#leaderboardTable', {
+                    order: [[2, 'desc']],
+                    pageLength: 10,
+                    responsive: true,
+                    searching: true,
+                    language: {
+                        emptyTable: "No donations received yet",
+                        zeroRecords: "No matching donors found"
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+            }
+        }
+
+        let captchaToken = null;
+
+        function onCaptchaSuccess(token) {
+            captchaToken = token;
+            document.getElementById('requestCoinBtn').disabled = false;
+        }
+
+        async function requestCoin() {
+            const btn = document.getElementById('requestCoinBtn');
+            const container = document.getElementById('responseContainer');
+            const alertContainer = document.getElementById('alertContainer');
+
+            if (!captchaToken) {
+                alertContainer.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Please complete the captcha first</span>
+                    </div>
+                `;
+                container.classList.add('show');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Processing...';
+
+            try {
+                const response = await fetch('/api/request-coin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ captcha_token: captchaToken })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Show success alert
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i>
+                            <span>${data.message}</span>
+                        </div>
+                    `;
+
+                    // Populate fields
+                    if (data.mnemonic) {
+                        document.getElementById('mnemonicValue').textContent = data.mnemonic;
+                        document.getElementById('mnemonicField').style.display = 'block';
+                    }
+                    if (data.private_key_wif) {
+                        document.getElementById('wifValue').textContent = data.private_key_wif;
+                        document.getElementById('wifField').style.display = 'block';
+                    }
+                    if (data.recipient_address) {
+                        document.getElementById('addressValue').textContent = data.recipient_address;
+                        document.getElementById('addressField').style.display = 'block';
+                    }
+                    if (data.tx_hash) {
+                        document.getElementById('txValue').textContent = data.tx_hash;
+                        document.getElementById('txField').style.display = 'block';
+                    }
+
+                    container.classList.add('show');
+                    
+                    // Reset captcha
+                    grecaptcha.reset();
+                    captchaToken = null;
+                    btn.disabled = true;
+                    
+                    // Reload balance and distributions
+                    loadBalance();
+                    loadDistributions();
+                } else {
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-error">
+                            <i class="fas fa-times-circle"></i>
+                            <span>${data.error}</span>
+                        </div>
+                    `;
+                    container.classList.add('show');
+                    
+                    // Reset captcha on error
+                    grecaptcha.reset();
+                    captchaToken = null;
+                }
+            } catch (error) {
+                alertContainer.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Error: ${error.message}</span>
+                    </div>
+                `;
+                container.classList.add('show');
+                
+                // Reset captcha on error
+                grecaptcha.reset();
+                captchaToken = null;
+            } finally {
+                btn.disabled = !captchaToken;
+                btn.innerHTML = 'Request A Kernelcoin';
+            }
+        }
+
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target.closest('.copy-button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+
+        // Initial load
+        loadBalance();
+        loadDistributions();
+
+        // Refresh balance every 30 seconds
+        setInterval(loadBalance, 30000);
+        setInterval(loadDistributions, 60000);
+    </script>
+</body>
+</html>
