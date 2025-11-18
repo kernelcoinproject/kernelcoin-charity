@@ -1,13 +1,13 @@
 package main
 
 import (
-	"bytes"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sync"
@@ -207,25 +207,15 @@ func (cs *CharityServer) HandleBalance(w http.ResponseWriter, r *http.Request) {
 
 func verifyCaptcha(token string, secretKey string) (bool, error) {
 	if secretKey == "" {
-		// If no secret key is configured, skip verification (for testing)
 		log.Printf("[CAPTCHA] No secret key configured, skipping verification")
 		return true, nil
 	}
 
-	reqBody := map[string]string{
-		"secret":   secretKey,
-		"response": token,
-	}
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		return false, err
-	}
+	data := url.Values{}
+	data.Set("secret", secretKey)
+	data.Set("response", token)
 
-	resp, err := http.Post(
-		"https://www.google.com/recaptcha/api/siteverify",
-		"application/json",
-		bytes.NewBuffer(jsonData),
-	)
+	resp, err := http.PostForm("https://www.google.com/recaptcha/api/siteverify", data)
 	if err != nil {
 		return false, err
 	}
