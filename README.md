@@ -39,6 +39,7 @@ EOF
 ```
 ```
 ./kernelcoin-cli createwallet "main"
+./kernelcoin-cli getnewaddress "" legacy
 ```
 
 2. Download and run the charity binary
@@ -55,6 +56,7 @@ export KERNELCOIN_RPC_USER="mike"
 export KERNELCOIN_RPC_PASS="x"
 # https://www.google.com/recaptcha/admin update index.html as well line ~718
 export RECAPTCHA_SECRET_KEY="YOUR_SECRET_KEY_HERE"
+# update address
 export CHARITY_ADDRESS="KETWkvgJKgDn6L8UgXUBepvkwa8zgoJ8ez"
 #export CHARITY_WIF="..."
 ./charity-server-lin-x86_x64
