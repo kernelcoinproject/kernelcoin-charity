@@ -54,10 +54,10 @@ cat > start.sh << EOF
 export KERNELCOIN_RPC_URL="http://127.0.0.1:9332"
 export KERNELCOIN_RPC_USER="mike"
 export KERNELCOIN_RPC_PASS="x"
-# https://www.google.com/recaptcha/admin update index.html as well line ~718
+# https://www.google.com/recaptcha/admin update index.html as well line ~617 
 export RECAPTCHA_SECRET_KEY="YOUR_SECRET_KEY_HERE"
 # update address
-export CHARITY_ADDRESS="KETWkvgJKgDn6L8UgXUBepvkwa8zgoJ8ez"
+export CHARITY_ADDRESS="KNkebi6ybfjBUQmZic4naE4rSDjQC1N4AS"
 #export CHARITY_WIF="..."
 ./charity-server-lin-x86_x64
 EOF
