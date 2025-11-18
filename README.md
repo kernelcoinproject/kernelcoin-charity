@@ -1,5 +1,5 @@
 # kernelcoin-charity
-free coins
+free coins https://charity.kernelcoin.org
 
 ## Screenshots
 <img width="1228" height="1097" alt="Screenshot 2025-11-18 at 3 02 30 AM" src="https://github.com/user-attachments/assets/8b4ff4f4-a1ff-41cb-8dd0-c22d16048f4f" />
