@@ -41,7 +41,7 @@ EOF
 ./kernelcoin-cli createwallet "main"
 ```
 
-2. Download and run the web wallet binary
+2. Download and run the charity binary
 
 ```
 cd ~
