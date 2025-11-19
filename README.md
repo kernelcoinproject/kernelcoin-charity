@@ -138,7 +138,9 @@ tmux kill-session -t charity 2>/dev/null
 tmux new -s charity -d
 tmux neww -t charity -n kernelcoin
 tmux neww -t charity -n server
+tmux neww -t charity -n load
 tmux send-keys -t charity:kernelcoin "cd /home/ec2-user/kernelcoin && ./kernelcoind" C-m
+tmux send-keys -t charity:load "cd /home/ec2-user/kernelcoin && ./kernelcoincli loadwallet 'main'" C-m
 tmux send-keys -t charity:server "cd /home/ec2-user/kernelcoin-charity && ./start.sh" C-m
 EOF
 chmod +x /home/ec2-user/startup.sh
