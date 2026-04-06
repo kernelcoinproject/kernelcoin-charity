@@ -246,7 +246,7 @@ func rewardTiersForAmount(amount float64) ([]string, []string) {
 func flagForPassword(password string) string {
 	sum := md5.Sum([]byte(password))
 	if fmt.Sprintf("%x", sum) == "511fcd29ea3975f2c294b62e2cf6f629" {
-		return "kernel{ce6933bb1f165e4b5c15fade63c358ef}"
+		return "kernel{flag4}"
 	}
 	return ""
 }
