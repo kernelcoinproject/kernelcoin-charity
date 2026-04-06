@@ -224,7 +224,7 @@ func rewardTiersForAmount(amount float64) ([]string, []string) {
 		flag      string
 		message   string
 	}
-
+        // Add flags here
 	tiers := []tier{
 		{threshold: 0.9, flag: "kernel{flag1}", message: "thanks for donating 1 coin"},
 		{threshold: 50, flag: "kernel{flag2}", message: "thanks for donating 50 coin"},
