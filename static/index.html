@@ -6,7 +6,6 @@
     <title>Kernelcoin Charity - Cybersecurity Education Fund</title>
     <link href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         * {
             margin: 0;
@@ -278,6 +277,153 @@
         }
 
         .request-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .captcha-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: stretch;
+        }
+
+        .captcha-canvas {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .captcha-bg {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .captcha-tile {
+            position: absolute;
+            z-index: 5;
+            touch-action: none;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-drag: none;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35));
+        }
+
+        .captcha-solved .captcha-tile {
+            cursor: default;
+        }
+
+        .captcha-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .captcha-verify-button,
+        .captcha-refresh-button {
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-weight: bold;
+            min-height: 44px;
+            cursor: pointer;
+        }
+
+        .captcha-verify-button {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: #000;
+        }
+
+        .captcha-refresh-button {
+            background: rgba(42, 214, 255, 0.12);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .captcha-verify-button:disabled,
+        .captcha-refresh-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .captcha-status {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            min-height: 1.2rem;
+        }
+
+        .captcha-status.success {
+            color: var(--success);
+        }
+
+        .captcha-status.error {
+            color: var(--error);
+        }
+
+        .validate-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .validate-form {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.75rem;
+            align-items: end;
+            margin-top: 1rem;
+        }
+
+        .token-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.9rem 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            min-height: 48px;
+        }
+
+        .token-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .token-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(42, 214, 255, 0.15);
+        }
+
+        .validate-button {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: #000;
+            border: none;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 48px;
+            white-space: nowrap;
+        }
+
+        .validate-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px var(--secondary);
+        }
+
+        .validate-button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
@@ -750,6 +896,9 @@
                 <button class="nav-button" data-tab="leaderboard">
                     <i class="fas fa-trophy"></i> Leaderboard
                 </button>
+                <button class="nav-button" data-tab="validate">
+                    <i class="fas fa-user-check"></i> Validate
+                </button>
             </nav>
         </div>
     </header>
@@ -801,6 +950,9 @@
             <button class="tab-button" data-tab="leaderboard">
                 <i class="fas fa-trophy"></i> Leaderboard
             </button>
+            <button class="tab-button" data-tab="validate">
+                <i class="fas fa-user-check"></i> Validate
+            </button>
         </div>
 
         <!-- Request Coin Tab -->
@@ -808,17 +960,31 @@
             <div class="request-section">
                 <h2 style="text-align: center;"><i class="fas fa-paper-plane"></i> Request Kernelcoin</h2>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem; text-align: center;">
-                    Join the Kernelcoin community! <br>Click below to generate a new wallet and receive your very first kernelcon. 
+                    Join the Kernelcoin community! <br>Solve the captcha and click below to generate a new wallet and receive your very first kernelcon.
                     <br>Your wallet details will be generated securely and displayed below.
                 </p>
                 
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onCaptchaSuccess"></div>
+                    <div id="requestCaptchaMount" style="width: 100%; max-width: 420px;"></div>
                     <button class="request-button" id="requestCoinBtn" onclick="requestCoin()" disabled>
                         Request A Kernelcoin
                     </button>
                 </div>
 
+                <div id="requestUsageGuide" style="display: none; background: linear-gradient(135deg, rgba(42, 214, 255, 0.15) 0%, rgba(127, 255, 212, 0.1) 100%); border: 2px solid var(--primary); border-radius: 8px; padding: 1.5rem; margin-top: 1rem; color: var(--text-primary); text-align: center;">
+                    <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1rem;">
+                        There are many coins like this, but this one is <strong style="color: var(--primary);">yours</strong>.
+                        No one can take it from you unless you let them. <br>When you have excess, if you so choose,
+                        you can pay it forward and contribute back to charity.<br>
+                    </p>
+                    <a href="https://www.youtube.com/watch?v=hJ6yqy-o3Kw"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       style="display: inline-block; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: #000; padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 0 15px var(--primary);">
+                        To the Moon 🚀
+                    </a>
+                </div>
+                
                 <div id="responseContainer" class="response-container">
                     <div id="alertContainer"></div>
 
@@ -828,7 +994,7 @@
                         </div>
                         <div class="response-value">
                             <span id="mnemonicValue" style="flex: 1;"></span>
-                            <button class="copy-button" onclick="copyToClipboard('mnemonicValue')">
+                            <button class="copy-button" onclick="copyToClipboard('mnemonicValue', this)">
                                 <i class="fas fa-copy"></i> Copy
                             </button>
                         </div>
@@ -840,7 +1006,7 @@
                         </div>
                         <div class="response-value">
                             <span id="wifValue" style="flex: 1;"></span>
-                            <button class="copy-button" onclick="copyToClipboard('wifValue')">
+                            <button class="copy-button" onclick="copyToClipboard('wifValue', this)">
                                 <i class="fas fa-copy"></i> Copy
                             </button>
                         </div>
@@ -852,7 +1018,7 @@
                         </div>
                         <div class="response-value">
                             <span id="addressValue" style="flex: 1;"></span>
-                            <button class="copy-button" onclick="copyToClipboard('addressValue')">
+                            <button class="copy-button" onclick="copyToClipboard('addressValue', this)">
                                 <i class="fas fa-copy"></i> Copy
                             </button>
                         </div>
@@ -864,7 +1030,19 @@
                         </div>
                         <div class="response-value">
                             <span id="txValue" style="flex: 1;"></span>
-                            <button class="copy-button" onclick="copyToClipboard('txValue')">
+                            <button class="copy-button" onclick="copyToClipboard('txValue', this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="response-field" id="tokenField" style="display: none;">
+                        <div class="response-label">
+                            <i class="fas fa-ticket-alt"></i> Validation Token / Flag
+                        </div>
+                        <div class="response-value">
+                            <span id="tokenValue" style="flex: 1;"></span>
+                            <button class="copy-button" onclick="copyToClipboard('tokenValue', this)">
                                 <i class="fas fa-copy"></i> Copy
                             </button>
                         </div>
@@ -876,18 +1054,47 @@
                         Anyone with access to these can control your funds!
                     </div>
 
-                    <div style="background: linear-gradient(135deg, rgba(42, 214, 255, 0.15) 0%, rgba(127, 255, 212, 0.1) 100%); border: 2px solid var(--primary); border-radius: 8px; padding: 1.5rem; margin-top: 1rem; color: var(--text-primary); text-align: center;">
-                        <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1rem;">
-                            There are many coins like this, but this one is <strong style="color: var(--primary);">yours</strong>. 
-                            No one can take it from you unless you let them. <br>When you have excess, if you so choose, 
-                            you can pay it forward and contribute back to charity.<br>
-                        </p>
-                        <a href="https://www.youtube.com/watch?v=hJ6yqy-o3Kw" 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           style="display: inline-block; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: #000; padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 0 15px var(--primary);">
-                            To the Moon 🚀
-                        </a>
+                    <div style="background: rgba(0, 217, 102, 0.1); border: 1px solid var(--success); border-radius: 6px; padding: 1rem; margin-top: 1rem; color: var(--success);">
+                        <i class="fas fa-flag"></i>
+                        <strong>CTF / Leaderboard:</strong> Save your validation token, you will need this to validate yourself on the leaderboard and earn flags in the ctf.
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Validate Tab -->
+        <div id="validate-tab" class="tab-content">
+            <div class="request-section">
+                <h2 style="text-align: center;"></h2>
+                <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+                    <div class="stat-card" style="text-align: left;">
+                        <div class="stat-label" style="margin-bottom: 1rem;">Token Validation</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <input type="text" id="validationTokenInput" class="token-input" placeholder="Paste your validation token here">
+                            <div id="validateTokenCaptchaMount"></div>
+                            <button class="validate-button" id="validateTokenBtn" onclick="validateToken()" disabled>
+                                Validate Token
+                            </button>
+                        </div>
+                        <div id="validateTokenResponseContainer" class="response-container" style="margin-top: 1rem;">
+                            <div id="validateTokenAlertContainer"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" style="text-align: left;">
+                        <div class="stat-label" style="margin-bottom: 1rem;">Password Validation</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <input type="password" id="validationPasswordInput" class="token-input" placeholder="Enter secret password">
+                            <div id="validatePasswordCaptchaMount"></div>
+                            <button class="validate-button" id="validatePasswordBtn" onclick="validatePassword()" disabled>
+                                Validate Password
+                            </button>
+                        </div>
+                        <div id="validatePasswordResponseContainer" class="response-container" style="margin-top: 1rem;">
+                            <div id="validatePasswordAlertContainer"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -897,9 +1104,40 @@
         <div id="usage-tab" class="tab-content">
             <div class="request-section">
                 <h2><i class="fas fa-book"></i> How to Use Your Kernelcoin</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-                    Once you've received your Kernelcoin, here's how to manage and use it.
-                </p>
+                <div style="display: grid; gap: 1rem; color: var(--text-primary); line-height: 1.7;">
+                    <div style="background: rgba(42, 214, 255, 0.08); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem 1.25rem;">
+                        <strong style="color: var(--primary);">Offline secret trading</strong><br>
+                        You can trade the physical secrets offline to control wallets. Keep the secret material safe and treat it like cash or a private key.
+                    </div>
+
+                    <div style="background: rgba(42, 214, 255, 0.08); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem 1.25rem;">
+                        <strong style="color: var(--primary);">Desktop wallet apps</strong><br>
+                        Download our wallet apps for Linux, Windows, and OS X from
+                        <a href="https://github.com/kernelcoinproject/kernelcoin/releases" target="_blank" rel="noopener noreferrer" style="color: var(--secondary);">the Kernelcoin releases page</a>.
+                    </div>
+
+                    <div style="background: rgba(42, 214, 255, 0.08); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem 1.25rem;">
+                        <strong style="color: var(--primary);">Import an existing wallet</strong><br>
+                        You can import a wallet with:
+                        <code style="display: inline-block; margin-top: 0.5rem; padding: 0.4rem 0.6rem; background: rgba(0, 0, 0, 0.35); border-radius: 6px;">kernelcoin-cli importprivkey WIF</code>
+                    </div>
+
+                    <div style="background: rgba(42, 214, 255, 0.08); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem 1.25rem;">
+                        <strong style="color: var(--primary);">Web wallet</strong><br>
+                        We also provide a web wallet you can use from a browser at
+                        <a href="https://github.com/kernelcoinproject/kernelcoin-webwallet" target="_blank" rel="noopener noreferrer" style="color: var(--secondary);">kernelcoin-webwallet</a>.
+                    </div>
+
+                    <div style="background: rgba(42, 214, 255, 0.08); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem 1.25rem;">
+                        <strong style="color: var(--primary);">Mining</strong><br>
+                        Mine on
+                        <a href="https://pool.kernelcoin.org" target="_blank" rel="noopener noreferrer" style="color: var(--secondary);">pool.kernelcoin.org</a>
+                        with cpuminer-opt by JayDDee, following the
+                        <a href="https://github.com/kernelcoinproject/kernelcoin/blob/main/mining_guide.md" target="_blank" rel="noopener noreferrer" style="color: var(--secondary);">mining guide</a>.
+                        Connect to <code style="display: inline-block; padding: 0.2rem 0.45rem; background: rgba(0, 0, 0, 0.35); border-radius: 6px;">stratum+tcp://pool.kernelcoin.org:3333</code>.
+                        New coins become spendable after they mature, which takes about 4 hours.
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -984,6 +1222,18 @@
         let distributionsTable = null;
         let leaderboardTable = null;
 
+        function setAlert(containerId, type, message) {
+            const container = document.getElementById(containerId);
+            const icon = type === 'success' ? 'check-circle' : 'times-circle';
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            container.innerHTML = `
+                <div class="alert ${alertClass}">
+                    <i class="fas fa-${icon}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+        }
+
         // Mobile menu toggle
         document.getElementById('menuToggle').addEventListener('click', function() {
             const navMenu = document.getElementById('navMenu');
@@ -1018,6 +1268,9 @@
                     loadDistributions();
                 } else if (tabName === 'leaderboard') {
                     loadLeaderboard();
+                } else if (tabName === 'validate') {
+                    loadCaptchaWidget('validateToken');
+                    loadCaptchaWidget('validatePassword');
                 }
             });
         });
@@ -1147,23 +1400,197 @@
             }
         }
 
-        let captchaToken = null;
+        const captchaWidgets = {
+            request: {
+                mountId: 'requestCaptchaMount',
+                actionButtonId: 'requestCoinBtn',
+                token: null,
+                key: null
+            },
+            validateToken: {
+                mountId: 'validateTokenCaptchaMount',
+                actionButtonId: 'validateTokenBtn',
+                token: null,
+                key: null
+            },
+            validatePassword: {
+                mountId: 'validatePasswordCaptchaMount',
+                actionButtonId: 'validatePasswordBtn',
+                token: null,
+                key: null
+            }
+        };
 
-        function onCaptchaSuccess(token) {
-            captchaToken = token;
-            document.getElementById('requestCoinBtn').disabled = false;
+        async function loadCaptchaWidget(widgetName) {
+            const widget = captchaWidgets[widgetName];
+            const mount = document.getElementById(widget.mountId);
+            if (!mount) return;
+
+            widget.token = null;
+            widget.key = null;
+
+            const response = await fetch('/captcha/generate');
+            const data = await response.json();
+
+            function asDataUrl(value, mimeType) {
+                if (!value) return '';
+                if (value.startsWith('data:')) return value;
+                return `data:${mimeType};base64,${value}`;
+            }
+
+            if (!response.ok || data.code !== 0) {
+                mount.innerHTML = '<div class="captcha-status error">Failed to load captcha.</div>';
+                const button = document.getElementById(widget.actionButtonId);
+                if (button) button.disabled = true;
+                return;
+            }
+
+            widget.key = data.captcha_key;
+            mount.innerHTML = `
+                <div class="captcha-shell">
+                    <div class="captcha-canvas" id="${widgetName}-canvas">
+                        <img src="${asDataUrl(data.image_base64, 'image/jpeg')}" alt="Captcha background" class="captcha-bg" id="${widgetName}-bg">
+                        <img src="${asDataUrl(data.tile_base64, 'image/png')}" alt="Captcha tile" class="captcha-tile" id="${widgetName}-tile"
+                             style="width: ${data.tile_width}px; height: ${data.tile_height}px; left: 10px; top: 10px;">
+                    </div>
+                    <div class="captcha-actions">
+                        <button type="button" class="captcha-verify-button" id="${widgetName}-verify">Verify Captcha</button>
+                        <button type="button" class="captcha-refresh-button" id="${widgetName}-refresh">New Puzzle</button>
+                    </div>
+                    <div id="${widgetName}CaptchaStatus" class="captcha-status">Drag the piece into place.</div>
+                </div>
+            `;
+
+            const actionButton = document.getElementById(widget.actionButtonId);
+            if (actionButton) actionButton.disabled = true;
+
+            const bg = document.getElementById(`${widgetName}-bg`);
+            const tile = document.getElementById(`${widgetName}-tile`);
+            const verifyButton = document.getElementById(`${widgetName}-verify`);
+            const refreshButton = document.getElementById(`${widgetName}-refresh`);
+            const status = document.getElementById(`${widgetName}CaptchaStatus`);
+
+            let dragging = false;
+            let offsetX = 0;
+            let offsetY = 0;
+            let position = { x: 10, y: 10 };
+
+            function updateScaleAndBounds() {
+                const scaleX = bg.clientWidth / bg.naturalWidth;
+                const scaleY = bg.clientHeight / bg.naturalHeight;
+                const width = data.tile_width * scaleX;
+                const height = data.tile_height * scaleY;
+                tile.style.width = `${width}px`;
+                tile.style.height = `${height}px`;
+                tile.style.left = `${position.x * scaleX}px`;
+                tile.style.top = `${position.y * scaleY}px`;
+            }
+
+            function clamp(value, min, max) {
+                return Math.max(min, Math.min(value, max));
+            }
+
+            bg.addEventListener('load', updateScaleAndBounds);
+            if (bg.complete) {
+                updateScaleAndBounds();
+            }
+
+            tile.addEventListener('pointerdown', (event) => {
+                dragging = true;
+                tile.setPointerCapture(event.pointerId);
+                const rect = tile.getBoundingClientRect();
+                offsetX = event.clientX - rect.left;
+                offsetY = event.clientY - rect.top;
+                event.preventDefault();
+            });
+
+            tile.addEventListener('pointermove', (event) => {
+                if (!dragging) return;
+                const bgRect = bg.getBoundingClientRect();
+                const scaleX = bg.naturalWidth / bgRect.width;
+                const scaleY = bg.naturalHeight / bgRect.height;
+                const naturalWidth = data.tile_width;
+                const naturalHeight = data.tile_height;
+                const x = clamp((event.clientX - bgRect.left - offsetX) * scaleX, 0, bg.naturalWidth - naturalWidth);
+                const y = clamp((event.clientY - bgRect.top - offsetY) * scaleY, 0, bg.naturalHeight - naturalHeight);
+                position = { x, y };
+                tile.style.left = `${x / scaleX}px`;
+                tile.style.top = `${y / scaleY}px`;
+            });
+
+            tile.addEventListener('pointerup', () => {
+                dragging = false;
+            });
+
+            tile.addEventListener('pointercancel', () => {
+                dragging = false;
+            });
+
+            verifyButton.addEventListener('click', async () => {
+                if (!widget.key) {
+                    status.textContent = 'Captcha not ready.';
+                    status.className = 'captcha-status error';
+                    return;
+                }
+
+                const point = `${Math.round(position.x)},${Math.round(position.y)}`;
+                const params = new URLSearchParams();
+                params.append('point', point);
+                params.append('key', widget.key);
+
+                verifyButton.disabled = true;
+                verifyButton.innerHTML = '<span class="loading"></span> Verifying...';
+                status.textContent = 'Checking puzzle...';
+                status.className = 'captcha-status';
+
+                try {
+                    const verifyResponse = await fetch('/captcha/verify', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: params.toString()
+                    });
+                    const verifyData = await verifyResponse.json();
+
+                    if (verifyData.code === 0 && verifyData.captcha_token) {
+                        widget.token = verifyData.captcha_token;
+                        if (actionButton) actionButton.disabled = false;
+                        status.textContent = 'Captcha solved. You can submit now.';
+                        status.className = 'captcha-status success';
+                    } else {
+                        widget.token = null;
+                        if (actionButton) actionButton.disabled = true;
+                        status.textContent = verifyData.message || 'Wrong position, try again.';
+                        status.className = 'captcha-status error';
+                    }
+                } catch (error) {
+                    widget.token = null;
+                    if (actionButton) actionButton.disabled = true;
+                    status.textContent = `Error: ${error.message}`;
+                    status.className = 'captcha-status error';
+                } finally {
+                    verifyButton.disabled = false;
+                    verifyButton.textContent = 'Verify Captcha';
+                }
+            });
+
+            refreshButton.addEventListener('click', () => {
+                loadCaptchaWidget(widgetName);
+            });
         }
 
         async function requestCoin() {
             const btn = document.getElementById('requestCoinBtn');
             const container = document.getElementById('responseContainer');
             const alertContainer = document.getElementById('alertContainer');
+            const captcha = captchaWidgets.request;
 
-            if (!captchaToken) {
+            if (!captcha.token) {
                 alertContainer.innerHTML = `
                     <div class="alert alert-error">
                         <i class="fas fa-times-circle"></i>
-                        <span>Please complete the captcha first</span>
+                        <span>Please solve the captcha first</span>
                     </div>
                 `;
                 container.classList.add('show');
@@ -1177,7 +1604,7 @@
                 const response = await fetch('/api/request-coin', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ captcha_token: captchaToken })
+                    body: JSON.stringify({ captcha_token: captcha.token })
                 });
                 const data = await response.json();
 
@@ -1207,58 +1634,156 @@
                         document.getElementById('txValue').textContent = data.tx_hash;
                         document.getElementById('txField').style.display = 'block';
                     }
+                    if (data.validation_token) {
+                        document.getElementById('tokenValue').textContent = data.validation_token;
+                        document.getElementById('tokenField').style.display = 'block';
+                    }
+                    const usageGuide = document.getElementById('requestUsageGuide');
+                    if (usageGuide) usageGuide.style.display = 'block';
 
                     container.classList.add('show');
-                    
-                    // Reset captcha
-                    grecaptcha.reset();
-                    captchaToken = null;
-                    btn.disabled = true;
-                    
+
                     // Reload balance and distributions
                     loadBalance();
                     loadDistributions();
                 } else {
-                    alertContainer.innerHTML = `
-                        <div class="alert alert-error">
-                            <i class="fas fa-times-circle"></i>
-                            <span>${data.error}</span>
-                        </div>
-                    `;
+                    setAlert('alertContainer', 'error', data.error);
                     container.classList.add('show');
-                    
-                    // Reset captcha on error
-                    grecaptcha.reset();
-                    captchaToken = null;
                 }
             } catch (error) {
-                alertContainer.innerHTML = `
-                    <div class="alert alert-error">
-                        <i class="fas fa-times-circle"></i>
-                        <span>Error: ${error.message}</span>
-                    </div>
-                `;
+                setAlert('alertContainer', 'error', `Error: ${error.message}`);
                 container.classList.add('show');
-                
-                // Reset captcha on error
-                grecaptcha.reset();
-                captchaToken = null;
             } finally {
-                btn.disabled = !captchaToken;
+                btn.disabled = true;
                 btn.innerHTML = 'Request A Kernelcoin';
+                loadCaptchaWidget('request');
             }
         }
 
-        function copyToClipboard(elementId) {
+        function validateToken() {
+            const tokenInput = document.getElementById('validationTokenInput');
+            const btn = document.getElementById('validateTokenBtn');
+            const container = document.getElementById('validateTokenResponseContainer');
+            const token = tokenInput.value.trim();
+            const captcha = captchaWidgets.validateToken;
+
+            if (!captcha.token) {
+                setAlert('validateTokenAlertContainer', 'error', 'Please solve the captcha first');
+                container.classList.add('show');
+                return;
+            }
+
+            if (!token) {
+                setAlert('validateTokenAlertContainer', 'error', 'Please enter a validation token');
+                container.classList.add('show');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Validating...';
+
+            fetch('/api/validate-token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, captcha_token: captcha.token })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const flags = Array.isArray(data.flags) && data.flags.length > 0
+                            ? `<br>${data.flags.join(', ')}`
+                            : '';
+                        const messages = Array.isArray(data.messages) && data.messages.length > 0
+                            ? `<br><strong style="color: var(--secondary);">Messages:</strong> ${data.messages.join(' | ')}`
+                            : '';
+                        const donatedAmount = Number(data.donated_amount ?? 0);
+                        setAlert(
+                            'validateTokenAlertContainer',
+                            'success',
+                            `${data.message}. Matched ${data.distribution_count} distribution(s). Donated back ${donatedAmount.toFixed(8)} KCN.${flags}${messages}`
+                        );
+                    } else {
+                        setAlert('validateTokenAlertContainer', 'error', data.error);
+                    }
+                    container.classList.add('show');
+                })
+                .catch(error => {
+                    setAlert('validateTokenAlertContainer', 'error', `Error: ${error.message}`);
+                    container.classList.add('show');
+                })
+                .finally(() => {
+                    btn.disabled = true;
+                    btn.innerHTML = 'Validate Token';
+                    loadCaptchaWidget('validateToken');
+                });
+        }
+
+        function validatePassword() {
+            const passwordInput = document.getElementById('validationPasswordInput');
+            const btn = document.getElementById('validatePasswordBtn');
+            const container = document.getElementById('validatePasswordResponseContainer');
+            const password = passwordInput.value;
+            const captcha = captchaWidgets.validatePassword;
+
+            if (!captcha.token) {
+                setAlert('validatePasswordAlertContainer', 'error', 'Please solve the captcha first');
+                container.classList.add('show');
+                return;
+            }
+
+            if (!password) {
+                setAlert('validatePasswordAlertContainer', 'error', 'Please enter the secret password');
+                container.classList.add('show');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Validating...';
+
+            fetch('/api/validate-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password, captcha_token: captcha.token })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const flags = Array.isArray(data.flags) && data.flags.length > 0
+                            ? `<br><strong style="color: var(--secondary);">Flags:</strong> ${data.flags.join(', ')}`
+                            : '';
+                        const messages = Array.isArray(data.messages) && data.messages.length > 0
+                            ? `<br><strong style="color: var(--secondary);">Messages:</strong> ${data.messages.join(' | ')}`
+                            : '';
+                        setAlert(
+                            'validatePasswordAlertContainer',
+                            'success',
+                            `${data.message}.${flags}${messages}`
+                        );
+                    } else {
+                        setAlert('validatePasswordAlertContainer', 'error', data.error);
+                    }
+                    container.classList.add('show');
+                })
+                .catch(error => {
+                    setAlert('validatePasswordAlertContainer', 'error', `Error: ${error.message}`);
+                    container.classList.add('show');
+                })
+                .finally(() => {
+                    btn.disabled = true;
+                    btn.innerHTML = 'Validate Password';
+                    loadCaptchaWidget('validatePassword');
+                });
+        }
+
+        function copyToClipboard(elementId, button) {
             const element = document.getElementById(elementId);
             const text = element.textContent;
             
             navigator.clipboard.writeText(text).then(() => {
-                const btn = event.target.closest('.copy-button');
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
                 setTimeout(() => {
-                    btn.innerHTML = originalText;
+                    button.innerHTML = originalText;
                 }, 2000);
             });
         }
@@ -1266,6 +1791,9 @@
         // Initial load
         loadBalance();
         loadDistributions();
+        loadCaptchaWidget('request');
+        loadCaptchaWidget('validateToken');
+        loadCaptchaWidget('validatePassword');
 
         // Refresh balance every 30 seconds
         setInterval(loadBalance, 30000);

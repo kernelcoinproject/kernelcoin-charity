@@ -28,9 +28,9 @@ var KernelcoinParams = chaincfg.Params{
 	Net:  0xf1c8d2fd, // Message start: 0xfd, 0xd2, 0xc8, 0xf1
 
 	// Address encoding prefixes
-	PubKeyHashAddrID:        45,  // K
-	ScriptHashAddrID:        23,  // A
-	PrivateKeyID:            28,  // C
+	PubKeyHashAddrID:        45,   // K
+	ScriptHashAddrID:        23,   // A
+	PrivateKeyID:            28,   // C
 	WitnessPubKeyHashAddrID: 0x06, // bc1 equivalent for kcn
 	WitnessScriptHashAddrID: 0x0A, // bc1 equivalent for kcn
 
